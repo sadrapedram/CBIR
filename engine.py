@@ -1,9 +1,28 @@
 from PIL import Image
 import numpy as np
 import cv2 as cv
-
-
+import os
+# VGG16
+# from urllib.request import urlopen
+# from PIL import Image
+# import timm
 class CBIREngine:
+    def __init__(self,directory='./data'):
+        self.images = []
+        for filename in os.listdir(directory):
+            if filename.endswith((".jpg", ".png", ".jpeg")):
+                img = Image.open(os.path.join(directory, filename))
+                img = img.convert("RGB")
+                self.images.append(img)
+        return None
+    def resize_image(self, image, w_h):
+
+        pil_image = Image.open(image)
+        # Convert PIL image to NumPy array
+        np_image = np.array(pil_image)
+        resize_image = cv.resize(np_image,w_h)
+        return resize_image
+    
 
     def gray_images(self,image):
         pil_image = Image.open(image)
@@ -42,3 +61,7 @@ class CBIREngine:
     
     def vector_creator():
         pass
+
+
+
+# class VGG16Classifier:

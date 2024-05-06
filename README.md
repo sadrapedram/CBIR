@@ -16,3 +16,7 @@ CBIR_Search_Engine/
 
 │
 └── main.py                      # Main file to run the CBIR search engine
+
+
+
+

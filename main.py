@@ -1,7 +1,11 @@
-from front_end import main as run_streamlit_app
-
+from front_end import frontEnd
+from engine import CBIREngine
 
 
 
 # Call the main function of your Streamlit app
-run_streamlit_app()
+
+if __name__ == "__main__":
+    cbir_class =CBIREngine()
+    cbir_class.images
+    frontEnd.main(cbir_class.images)
