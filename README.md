@@ -8,9 +8,8 @@ CBIR_Search_Engine/
 │   └── database.py              # Database operations (if applicable)
 │
 ├── frontend/
-│   ├── index.html               # Frontend HTML file
-│   ├── styles.css               # CSS styles for frontend
-│   └── scripts.js               # JavaScript for frontend interactions
+
+│   └── streamlit_front.py               # JavaScript for frontend interactions
 │
 ├── feature_extractor/
 │   └── feature_extractor.py     # Feature extraction engine
