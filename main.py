@@ -7,5 +7,9 @@ from engine import CBIREngine
 
 if __name__ == "__main__":
     cbir_class =CBIREngine()
-    cbir_class.images
-    frontEnd.main(cbir_class.images)
+    for img in cbir_class.images:
+        print(img)
+        gray_image = cbir_class.gray_images(img)
+        cbir_class.gray_images_list.append(gray_image)
+    lbp_images = cbir_class.getLBPimage(cbir_class.gray_images_list)
+    frontEnd.main(cbir_class.images,cbir_class.gray_images_list,lbp_images)
