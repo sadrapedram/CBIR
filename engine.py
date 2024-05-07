@@ -2,6 +2,9 @@ from PIL import Image
 import numpy as np
 import cv2 as cv
 import os
+from rembg import remove
+
+
 # VGG16
 # from urllib.request import urlopen
 # from PIL import Image
@@ -17,6 +20,7 @@ class CBIREngine:
             if filename.endswith((".jpg", ".png", ".jpeg")):
                 img = Image.open(os.path.join(directory, filename))
                 img = img.convert("RGB")
+                img = remove(img)
                 self.images.append(img)
         return None
     def _resize_image(self, image, w_h):
