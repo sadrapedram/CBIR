@@ -1,3 +1,5 @@
 venv
 data
 __pycache__
+testing.ipynb
+hdf5_testing.ipynb

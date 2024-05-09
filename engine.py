@@ -11,17 +11,21 @@ from rembg import remove
 # import timm
 class CBIREngine:
     def __init__(self,directory='./data',w_h = (256,256)):
-        self.images = []
-        self.gray_images_list = []
-        self.LBP_imgs = []
+        self.images_dict = {}  # Dictionary to store images with file names
+        self.mean = {}
+        self.gray_images_dict = {}
+        self.LBP_imgs = {}
 
         self.w_h = w_h
+
         for filename in os.listdir(directory):
             if filename.endswith((".jpg", ".png", ".jpeg")):
                 img = Image.open(os.path.join(directory, filename))
                 img = img.convert("RGB")
                 img = remove(img)
-                self.images.append(img)
+                self.images_dict[filename] = img
+
+
         return None
     def _resize_image(self, image, w_h):
 
@@ -41,9 +45,21 @@ class CBIREngine:
 
         return resized_gray_image
 
-
+    def image_color_mean(self):
+        for key ,img in self.images_dict.items():
+            b,g,r,d = Image.Image.split(img)
+            mask = (np.array(d) > 0)
+            stuff_r = np.array(r)[mask]
+            stuff_g = np.array(g)[mask]
+            stuff_b = np.array(b)[mask]
+            mean_r = stuff_r.mean()
+            mean_g = stuff_g.mean()
+            mean_b = stuff_b.mean()
+            self.mean[key] = (mean_r, mean_g, mean_b)
+        return self.mean
+    
     def getLBPimage(self, gray_images):
-        for img in gray_images:
+        for key, img in gray_images.items():
             imgLBP = np.zeros_like(img)
             neighboor = 3
             for ih in range(0, img.shape[0] - neighboor):
@@ -64,7 +80,7 @@ class CBIREngine:
                     # Assign the decimal value to the corresponding pixel
                     imgLBP[ih+1, iw+1] = img_decimal
                 
-            self.LBP_imgs.append(imgLBP)
+            self.LBP_imgs[key]= imgLBP
         return self.LBP_imgs
 
 

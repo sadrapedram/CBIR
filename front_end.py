@@ -3,7 +3,7 @@ import streamlit as st
 
 
 class frontEnd:
-    def main(images,gray_images,lbp_images):
+    def main(images,gray_images,lbp_images,table):
         if 'image' not in st.session_state:
             st.session_state['image'] = None
     
@@ -18,7 +18,6 @@ class frontEnd:
             st.image(gray_images)
         with col3:
             st.image(lbp_images)
-
 
 
 
