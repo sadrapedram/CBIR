@@ -3,29 +3,42 @@ import numpy as np
 import cv2 as cv
 import os
 from rembg import remove
-
-
+from data_base import dataBase
+from skimage.filters.rank import entropy
+from skimage.morphology import disk
 # VGG16
 # from urllib.request import urlopen
 # from PIL import Image
 # import timm
 class CBIREngine:
+
     def __init__(self,directory='./data',w_h = (256,256)):
+        cbir_db=dataBase()
         self.images_dict = {}  # Dictionary to store images with file names
-        self.mean = {}
+        self.color_mean = {}
         self.gray_images_dict = {}
         self.LBP_imgs = {}
-
+        self.ent_attrs = {}
+        self.LBP_attrs = {}
+        self.images_attrs_vector = {}
         self.w_h = w_h
+        existing_file_names = cbir_db.get_group_names()
 
         for filename in os.listdir(directory):
-            if filename.endswith((".jpg", ".png", ".jpeg")):
-                img = Image.open(os.path.join(directory, filename))
-                img = img.convert("RGB")
-                img = remove(img)
-                self.images_dict[filename] = img
+            if existing_file_names is not None:
+                if filename not in existing_file_names:
 
-
+                    if filename.endswith((".jpg", ".png", ".jpeg")):
+                        img = Image.open(os.path.join(directory, filename))
+                        img = img.convert("RGB")
+                        img = remove(img)
+                        self.images_dict[filename] = img
+            else:
+                if filename.endswith((".jpg", ".png", ".jpeg")):
+                    img = Image.open(os.path.join(directory, filename))
+                    img = img.convert("RGB")
+                    img = remove(img)
+                    self.images_dict[filename] = img
         return None
     def _resize_image(self, image, w_h):
 
@@ -43,21 +56,9 @@ class CBIREngine:
         resized_gray_image = self._resize_image(gray_image_one_channel,self.w_h)
         print("chaneel number:",resized_gray_image.shape)
 
-        return resized_gray_image
+        return np.array(resized_gray_image)
 
-    def image_color_mean(self):
-        for key ,img in self.images_dict.items():
-            b,g,r,d = Image.Image.split(img)
-            mask = (np.array(d) > 0)
-            stuff_r = np.array(r)[mask]
-            stuff_g = np.array(g)[mask]
-            stuff_b = np.array(b)[mask]
-            mean_r = stuff_r.mean()
-            mean_g = stuff_g.mean()
-            mean_b = stuff_b.mean()
-            self.mean[key] = (mean_r, mean_g, mean_b)
-        return self.mean
-    
+
     def getLBPimage(self, gray_images):
         for key, img in gray_images.items():
             imgLBP = np.zeros_like(img)
@@ -91,6 +92,7 @@ class CBIREngine:
         filtered_image = cv.blur(gray_image,(pixel,pixel))
         return filtered_image
     
+
     def custum_compute_sobel(self, image):
         # Sobel operators for computing gradients
         sobel_x = np.array([[-.1, 0, .1],
@@ -111,9 +113,52 @@ class CBIREngine:
         # print(magnitude)
         return magnitude.astype(np.uint8) 
     
-    def vector_creator():
-        pass
 
 
 
+
+    def vector_creator(self):
+        for key in self.images_dict.keys():
+            custum_features = np.array([self.color_mean[key][0],
+                                        self.color_mean[key][1],
+                                        self.color_mean[key][2],
+                                        self.ent_attrs[key][0],
+                                        self.ent_attrs[key][1],
+                                        self.LBP_attrs[key][0],
+                                        self.LBP_attrs[key][1],])
+
+            self.images_attrs_vector[key] = custum_features
+
+
+
+    def image_color_mean(self):
+
+        for key ,img in self.images_dict.items():
+            b,g,r,d = Image.Image.split(img)
+            mask = (np.array(d) > 0)
+            stuff_r = np.array(r)[mask]
+            stuff_g = np.array(g)[mask]
+            stuff_b = np.array(b)[mask]
+            mean_r = stuff_r.mean()
+            mean_g = stuff_g.mean()
+            mean_b = stuff_b.mean()
+            self.color_mean[key] = [mean_r, mean_g, mean_b]
+        return self.color_mean
+    
+    def gray_image_entropy_attrs(self):
+        for key ,img in self.gray_images_dict.items():
+            entropy_image = entropy(img,disk(8))
+            ent_mean = entropy_image.mean()
+            ent_std = entropy_image.std()
+            self.ent_attrs[key] = [ent_mean,ent_std]
+        return self.ent_attrs
+
+    def LBP_image_attrs(self):
+        for key ,img in self.LBP_imgs.items():
+            img = np.array(img)
+            ent_mean = img.mean()
+            ent_std = img.std()
+            self.LBP_attrs[key] = [ent_mean,ent_std]      
+        return self.LBP_attrs
+    
 # class VGG16Classifier:

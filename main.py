@@ -8,19 +8,25 @@ from data_base import dataBase
 if __name__ == "__main__":
     cbir_class =CBIREngine()
     cbir_db = dataBase('test_db.hdf5')
-    cbir_db.get_group_names('')
+
     for key, img in cbir_class.images_dict.items():
         print(img)
         gray_image = cbir_class.gray_images(img)
         cbir_class.gray_images_dict[key] = gray_image
 
     cbir_class.getLBPimage(cbir_class.gray_images_dict)
-    mean = cbir_class.image_color_mean()
+    color_mean = cbir_class.image_color_mean()
     for key, img in cbir_class.images_dict.items():
         cbir_db.add_image(image_name=key,
                           image=img,
                           gray_image=cbir_class.gray_images_dict[key],
-                          lbp_image= cbir_class.LBP_imgs[key])
+                          lbp_image= cbir_class.LBP_imgs[key],
+                          color_mean=cbir_class.color_mean[key])
+        
     # print(list(cbir_class.images_dict.values())[0])
 
-    frontEnd.main(cbir_class.images_dict.values(),cbir_class.gray_images_dict.values(),cbir_class.LBP_imgs.values(),mean)
+    frontEnd.main(cbir_class.images_dict.values(),
+                  cbir_class.gray_images_dict.values(),
+                  cbir_class.LBP_imgs.values(),
+                  color_mean
+                  )

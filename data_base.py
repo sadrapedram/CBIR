@@ -6,7 +6,7 @@ import os
 
 
 class dataBase:
-    def __init__(self, filename='file6.hdf5', initial_size=1000):
+    def __init__(self, filename='test_db.hdf5', initial_size=1000):
         # Create directory if it doesn't exist
         directory = os.path.join("data", "data_base")
         os.makedirs(directory, exist_ok=True)
@@ -23,24 +23,30 @@ class dataBase:
 
         
 
-    def add_image(self,image_name, image,lbp_image,gray_image):
+    def add_image(self,image_name, image,lbp_image,gray_image,color_mean):
         if os.path.exists(self.file_name):       
             with h5py.File(self.file_name,'a') as hdf:
                 g1 = hdf.create_group(image_name)
                 g1.create_dataset(name=self.image,data=image)
                 g1.create_dataset(name=self.lbp_image,data=lbp_image)
                 g1.create_dataset(name=self.gray_image,data=gray_image)
+                g1.attrs['color_mean'] = color_mean
+                g1.attrs['']
         else:
             with h5py.File(self.file_name,'w') as hdf:
                 g1 = hdf.create_group(image_name)
                 g1.create_dataset(name=self.image,data=image)
                 g1.create_dataset(name=self.lbp_image,data=lbp_image)
                 g1.create_dataset(name=self.gray_image,data=gray_image)
+                g1.attrs['color_mean'] = color_mean
 
     def get_group_names(self):
-        with h5py.File(self.file_name,'r') as hdf:
-            print(hdf.keys())
-            return hdf.keys()
+        if os.path.exists(self.file_name):       
+            with h5py.File(self.file_name,'r') as hdf:
+                return list(hdf.keys())
+        else:
+            return None
+    
         # # Initialize HDF5 file and datasets if they don't exist
         # with h5py.File(self.filename, "a") as file:
         #     if self.vector_dataset_name not in file:

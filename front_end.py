@@ -10,15 +10,18 @@ class frontEnd:
         with st.sidebar:
             st.session_state['image'] =  st.file_uploader(label="upload image",type=['png','jpg','jpeg'])
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             for image in images:
                 st.image(image)
         with col2:
-            st.image(gray_images)
+            for image in gray_images:
+                st.image(image)
         with col3:
-            st.image(lbp_images)
-
+            for image in lbp_images:
+                st.image(image)
+        with col4:
+            st.table(table)
 
 
 
