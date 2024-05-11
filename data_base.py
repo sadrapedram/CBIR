@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 import os
-
+from PIL import Image
 
 
 
@@ -23,22 +23,21 @@ class dataBase:
 
         
 
-    def add_image(self,image_name, image,lbp_image,gray_image,color_mean):
+    def add_image(self,image_name, image,lbp_image,gray_image,vector_attrs):
         if os.path.exists(self.file_name):       
             with h5py.File(self.file_name,'a') as hdf:
                 g1 = hdf.create_group(image_name)
                 g1.create_dataset(name=self.image,data=image)
                 g1.create_dataset(name=self.lbp_image,data=lbp_image)
                 g1.create_dataset(name=self.gray_image,data=gray_image)
-                g1.attrs['color_mean'] = color_mean
-                g1.attrs['']
+                g1.attrs['cbir_vector'] = vector_attrs
         else:
             with h5py.File(self.file_name,'w') as hdf:
                 g1 = hdf.create_group(image_name)
                 g1.create_dataset(name=self.image,data=image)
                 g1.create_dataset(name=self.lbp_image,data=lbp_image)
                 g1.create_dataset(name=self.gray_image,data=gray_image)
-                g1.attrs['color_mean'] = color_mean
+                g1.attrs['cbir_vector'] = vector_attrs
 
     def get_group_names(self):
         if os.path.exists(self.file_name):       
@@ -46,7 +45,23 @@ class dataBase:
                 return list(hdf.keys())
         else:
             return None
+    def get_custom_image_group(self,group):
+        image_list = []
+        with h5py.File(self.file_name,'r') as hdf:
+            g1 =hdf.get(group)
+            image_key = list(g1.keys())
+            for img in image_key:
+                data = g1.get(img)
+                dataset1 = Image.fromarray(np.array(data))
+                image_list.append(dataset1)
+            vector = g1.attrs['cbir_vector']
+        return image_list,vector
     
+    def get_vector_by_group_name(self,group):
+        with h5py.File(self.file_name,'r') as hdf:
+            g1 =hdf.get(group)
+            vector = g1.attrs['cbir_vector']
+        return vector
         # # Initialize HDF5 file and datasets if they don't exist
         # with h5py.File(self.filename, "a") as file:
         #     if self.vector_dataset_name not in file:

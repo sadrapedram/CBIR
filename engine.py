@@ -13,7 +13,7 @@ from skimage.morphology import disk
 class CBIREngine:
 
     def __init__(self,directory='./data',w_h = (256,256)):
-        cbir_db=dataBase()
+        self.cbir_db=dataBase()
         self.images_dict = {}  # Dictionary to store images with file names
         self.color_mean = {}
         self.gray_images_dict = {}
@@ -22,11 +22,10 @@ class CBIREngine:
         self.LBP_attrs = {}
         self.images_attrs_vector = {}
         self.w_h = w_h
-        existing_file_names = cbir_db.get_group_names()
 
         for filename in os.listdir(directory):
-            if existing_file_names is not None:
-                if filename not in existing_file_names:
+            if self.cbir_db.get_group_names() is not None:
+                if filename not in self.cbir_db.get_group_names():
 
                     if filename.endswith((".jpg", ".png", ".jpeg")):
                         img = Image.open(os.path.join(directory, filename))
@@ -118,6 +117,7 @@ class CBIREngine:
 
 
     def vector_creator(self):
+
         for key in self.images_dict.keys():
             custum_features = np.array([self.color_mean[key][0],
                                         self.color_mean[key][1],
@@ -129,9 +129,14 @@ class CBIREngine:
 
             self.images_attrs_vector[key] = custum_features
 
+    def cosine_similarity(self,vector_a, vector_b):
+        dot_product = np.dot(vector_a, vector_b)
+        norm_a = np.linalg.norm(vector_a)
+        norm_b = np.linalg.norm(vector_b)
+        similarity = dot_product / (norm_a * norm_b)
+        return similarity
 
-
-    def image_color_mean(self):
+    def image_color_mean_attrs(self):
 
         for key ,img in self.images_dict.items():
             b,g,r,d = Image.Image.split(img)
@@ -160,5 +165,16 @@ class CBIREngine:
             ent_std = img.std()
             self.LBP_attrs[key] = [ent_mean,ent_std]      
         return self.LBP_attrs
-    
+
+    def vector_comparison(self,vector):
+        vector_comparison_dic = {}
+        for key in self.cbir_db.get_group_names():
+            key_vector = self.cbir_db.get_vector_by_group_name(key)
+            similarity = self.cosine_similarity(vector,key_vector)
+            vector_comparison_dic[key] = similarity
+        sorted_vector_comparison_dic = dict(sorted(vector_comparison_dic.items(), key=lambda item: item[1]))
+        return sorted_vector_comparison_dic
+    # def fourier_transform(self):
+    #     for key ,img in self.images_dict.items():
+    #             np.
 # class VGG16Classifier:
