@@ -172,7 +172,7 @@ class CBIREngine:
             key_vector = self.cbir_db.get_vector_by_group_name(key)
             similarity = self.cosine_similarity(vector,key_vector)
             vector_comparison_dic[key] = similarity
-        sorted_vector_comparison_dic = dict(sorted(vector_comparison_dic.items(), key=lambda item: item[1]))
+        sorted_vector_comparison_dic = dict(sorted(vector_comparison_dic.items(), key=lambda item: item[1],reverse=True))
         return sorted_vector_comparison_dic
     # def cbir_search(search):
 
