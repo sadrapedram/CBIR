@@ -174,6 +174,8 @@ class CBIREngine:
             vector_comparison_dic[key] = similarity
         sorted_vector_comparison_dic = dict(sorted(vector_comparison_dic.items(), key=lambda item: item[1]))
         return sorted_vector_comparison_dic
+    # def cbir_search(search):
+
     # def fourier_transform(self):
     #     for key ,img in self.images_dict.items():
     #             np.

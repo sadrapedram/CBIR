@@ -28,8 +28,4 @@ if __name__ == "__main__":
 
     # print(list(cbir_class.images_dict.values())[0])
 
-    frontEnd.main(cbir_class.images_dict.values(),
-                  cbir_class.gray_images_dict.values(),
-                  cbir_class.LBP_imgs.values(),
-                  cbir_class.images_attrs_vector
-                  )
+    frontEnd.main()
